@@ -2,7 +2,7 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Center extends CI_Controller {
+class Diagnosis extends CI_Controller {
 
     function __construct() {
 
@@ -14,88 +14,130 @@ class Center extends CI_Controller {
     }
 
     public function index() {
-        if ($this->session->userdata('sessionName') == "") {
+        if ($this->session->userdata('name') == "" || $this->session->userdata('sessionName') == "") {
             $this->session->sess_destroy();
-            redirect('welcome', 'refresh');
+            redirect('home', 'refresh');
         }
-         $query = $this->Md->query("SELECT * FROM center");
-        
-        if ($query) {
-            $data['centers'] = $query;
-        }
-        $this->load->view('view-centers', $data);
-    }
-    public function map() {
-      
-         $query = $this->Md->query("SELECT * FROM center WHERE lat<>'' OR lng<>''");
-        
-        if ($query) {
-            $data['centers'] = $query;
-        }
-        $this->load->view('view-map', $data);
+        $this->load->view('home-page', $data);
     }
 
-  
+    public function view() {
+        if ($this->session->userdata('name') == "" || $this->session->userdata('sessionName') == "") {
+            $this->session->sess_destroy();
+            redirect('home', 'refresh');
+        }
+        $this->load->view('live-page', $data);
+    }
+
+    public function home() {
+        if ($this->session->userdata('name') == "" || $this->session->userdata('sessionName') == "") {
+            $this->session->sess_destroy();
+            redirect('home', 'refresh');
+        }
+        $this->load->view('home-page', $data);
+    }
+
+    public function details() {
+
+        // $orgid = urldecode($this->uri->segment(3));
+        $query = $this->Md->query("SELECT * FROM logs WHERE sessionID ='" . urldecode($this->uri->segment(3)) . "' LIMIT 12");
+
+        if ($query) {
+            $data['logs'] = $query;
+        }
+        $this->load->view('view-logs', $data);
+        return;
+    }
+
+    public function analysis() {
+        if ($this->session->userdata('name') == "" || $this->session->userdata('sessionName') == "") {
+            $this->session->sess_destroy();
+            redirect('home', 'refresh');
+        }
+        if ($this->session->userdata('sessionName') == "patient") {
+
+            $query = $this->Md->query("SELECT *,physician.name AS physician FROM analysis LEFT JOIN physician ON analysis.physicianID = physician.physicianID   WHERE  patientID='" . $this->session->userdata('patientID') . "'");
+            //  var_dump($query);
+            if ($query) {
+                $data['analysis'] = $query;
+            }
+            $this->load->view('view-patient-analysis', $data);
+            return;
+        } else {
+            $query = $this->Md->query("SELECT * FROM analysis LEFT JOIN patient ON analysis.patientID=patient.patientID  WHERE  analysis.physicianID='" . $this->session->userdata('physicianID') . "' || patient.physicianID='" . $this->session->userdata('physicianID') . "' ORDER BY created ASC");
+
+            if ($query) {
+                $data['analysis'] = $query;
+            }
+            $this->load->view('view-all-analysis', $data);
+        }
+    }
+
+    public function listing() {
+        $query = $this->Md->query("SELECT * FROM patient");
+        echo json_encode($query);
+    }
+
+    public function session() {
+
+        $patientSession = $this->input->post('patientID');
+        $this->session->set_userdata('patientID', $this->input->post('patientID'));
+        $sessionID = $this->GUID();
+        $this->session->set_userdata('sessionID', $sessionID);
+        $this->session->set_userdata('patientSession', $patientSession);
+
+        $this->session->set_userdata($newdata);
+        echo 'Your session is: ' . $sessionID;
+    }
 
     public function create() {
 
         $this->load->helper(array('form', 'url'));
 
         //user information
-        $centerID = $this->GUID();
-        $name = $this->input->post('name');
 
+        if ($this->session->userdata('patientSession') != "" && $this->session->userdata('patientSession') != "") {
 
-        if ($name != "") {         
-           
-            ///organisation image uploads
-            $file_element_name = 'userfile';
-            $config['file_name'] = $patientID;
-            $config['upload_path'] = 'uploads/';
-            $config['allowed_types'] = '*';
-            $config['encrypt_name'] = FALSE;
-          
-            $this->load->library('upload', $config);
-            if (!$this->upload->do_upload($file_element_name)) {
-                $status = 'errors';
-                $msg = $this->upload->display_errors('', '');
-                $status .= '<div class="alert alert-error"> <strong>' . $msg . '</strong></div>';
-            }
-            $data = $this->upload->data();
-            $userfile = $data['file_name'];
-            $users = array('centerID' => $centerID, 'name' => $this->input->post('name'), 'image' => $userfile, 'address' => $this->input->post('address'), 'country' => $this->input->post('country'), 'city' => $this->input->post('city'), 'region' => $this->input->post('region'), 'lat' => $this->input->post('lat'), 'lng' => $this->input->post('lng'), 'type' => $this->input->post('type'), 'registrationNo' => $this->input->post('registrationNo'), 'created' => date('Y-m-d H:i:s'), 'status' => 'Dull');
-            $this->Md->save($users, 'center');
-            $status .= '<div class="alert alert-success">  <strong>You have successfully registered with us please login to continue</strong></div>';
+            $deductions = $this->Md->query_cell("SELECT name FROM infections WHERE signs  LIKE '%" . $this->input->post('patientNotes') . "%'", 'name');
+            $data = array('physicianID' => $this->session->userdata('physicianID'), 'patientID' => $this->session->userdata('patientSession'), 'sessionID' => $this->session->userdata('sessionID'), 'deduction' => $deductions, 'metric' => $this->input->post('metric'), 'type' => $this->input->post('type'), 'medicalNotes' => $this->input->post('medicalNotes'), 'symptoms' => $this->input->post('patientNotes'), 'qty' => $this->input->post('qty'), 'next' => date("Y-m-d", strtotime($this->input->post('next'))), 'results' => $this->input->post('results'), 'stamp' => date('Y-m-d H:i:s'));
+            $this->Md->save($data, 'analysis');
+            $status .= '<div class="alert alert-success">  <strong>Session information saved</strong></div>';
             $this->session->set_flashdata('msg', $status);
 
-            redirect('/home', 'refresh');
+            redirect('/diagnosis/analysis', 'refresh');
+            return;
+        }
+
+       if (strlen($this->input->post('sessionID')) >3 && strlen($this->input->post('patientNotes'))>3 && $this->session->userdata('patientSession') == "") {
+
+            $deductions = $this->Md->query_cell("SELECT name FROM infections WHERE signs  LIKE '%" . $this->input->post('patientNotes') . "%'", 'name');
+            $data = array('physicianID' => "", 'patientID' => $this->input->post('patientID'), 'mac' => $this->input->post('mobile'), 'sessionID' => $this->input->post('sessionID'), 'deduction' => $deductions, 'metric' => $this->input->post('metric'), 'type' => $this->input->post('type'), 'medicalNotes' => $this->input->post('medicalNotes'), 'symptoms' => $this->input->post('patientNotes'), 'qty' => $this->input->post('qty'), 'next' => date("Y-m-d"), 'results' => $this->input->post('results'), 'stamp' => date('Y-m-d H:i:s'));
+            $this->Md->save($data, 'analysis');
+            $b["info"] = "Session initialized";
+            $b["status"] = "true";
+            if ($deductions != "") {
+                $b["deduction"] = $deductions;
+            } else {
+
+                $b["deduction"] = "No valid information concerning your diagnosis";
+            }
+            echo json_encode($b);
+            return;
+        } else {
+            $b["info"] = "Session initialization failed";
+            $b["status"] = "false";
+            $b["deduction"] = "No valid information concerning your diagnosis";
+          
+            echo json_encode($b);
+            return;
         }
     }
 
     public function api() {
-        $orgid = urldecode($this->uri->segment(3));
-        $result = $this->Md->query("SELECT * FROM users WHERE org ='" . $orgid . "'");
 
-        $all = array();
 
-        foreach ($result as $res) {
-            $resv = new stdClass();
-            $resv->id = $res->id;
-            $resv->name = $res->name;
-            $resv->org = $res->org;
-            $resv->address = $res->address;
-            $resv->image = $res->image;
-            $resv->contact = $res->contact;
-            $resv->password = $this->encrypt->decode($res->password, $res->email);
-            $resv->types = $res->types;
-            $resv->level = $res->level;
-            $resv->created = $res->created;
-            $resv->status = $res->status;
-            $resv->email = $res->email;
-
-            array_push($all, $resv);
-        }
-        echo json_encode($all);
+        $query = $this->Md->query("SELECT * FROM analysis LEFT JOIN patient ON analysis.patientID= patient.patientID");
+        echo json_encode($query);
     }
 
     public function update_image() {
@@ -537,6 +579,7 @@ class Center extends CI_Controller {
     }
 
     public function updater() {
+
         $this->load->helper(array('form', 'url'));
 
         if (!empty($_POST)) {
@@ -553,7 +596,7 @@ class Center extends CI_Controller {
                     //update the values
                     $task = array($field_name => $val);
                     // $this->Md->update($user_id, $task, 'tasks');
-                    $this->Md->update_dynamic($user_id, 'userID', 'users', $task);
+                    $this->Md->update_dynamic($user_id, 'ID', 'analysis', $task);
                     echo "Updated";
                 } else {
                     echo "Invalid Requests";

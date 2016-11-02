@@ -14,11 +14,28 @@ class Physician extends CI_Controller {
     }
 
     public function index() {
-        if ($this->session->userdata('username') == "") {
+        if ($this->session->userdata('name') == "" || $this->session->userdata('sessionName') == "") {
             $this->session->sess_destroy();
-            redirect('welcome', 'refresh');
+            redirect('home', 'refresh');
         }
-        $this->load->view('add-user');
+       $query = $this->Md->query("SELECT * FROM  physician");
+        
+        if ($query) {
+            $data['phys'] = $query;
+        }
+        $this->load->view('view-phy', $data);
+    }
+     public function mine() {
+        if ($this->session->userdata('name') == "" || $this->session->userdata('sessionName') == "") {
+            $this->session->sess_destroy();
+            redirect('home', 'refresh');
+        }
+       $query = $this->Md->query("SELECT * FROM  physician");
+        
+        if ($query) {
+            $data['phys'] = $query;
+        }
+        $this->load->view('view-phy', $data);
     }
 
     public function add() {
@@ -541,7 +558,7 @@ class Physician extends CI_Controller {
                     //update the values
                     $task = array($field_name => $val);
                     // $this->Md->update($user_id, $task, 'tasks');
-                    $this->Md->update_dynamic($user_id, 'userID', 'users', $task);
+                    $this->Md->update_dynamic($user_id, 'physicianID', 'physician', $task);
                     echo "Updated";
                 } else {
                     echo "Invalid Requests";

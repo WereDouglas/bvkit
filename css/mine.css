@@ -235,6 +235,7 @@ cursor:pointer;
 .scroll {
   overflow:auto;
   padding-right: 1%;
+  
 }
 select {
     width: 100%;
@@ -285,6 +286,13 @@ select {
     border-radius: 5px;
     padding: 20px;
     background-color: #FFFFFF;
+}
+
+.modal.in .modal-dialog {
+     -webkit-transform: translate(0,0);
+    -ms-transform: translate(0,0);
+    transform: translate(0,0);
+    width: 67%;
 }
 
 

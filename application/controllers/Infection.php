@@ -2,7 +2,7 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Center extends CI_Controller {
+class Infection extends CI_Controller {
 
     function __construct() {
 
@@ -14,67 +14,125 @@ class Center extends CI_Controller {
     }
 
     public function index() {
-        if ($this->session->userdata('sessionName') == "") {
+        if ($this->session->userdata('name') == "" || $this->session->userdata('sessionName') == "") {
             $this->session->sess_destroy();
-            redirect('welcome', 'refresh');
+            redirect('home', 'refresh');
         }
-         $query = $this->Md->query("SELECT * FROM center");
+         $query = $this->Md->query("SELECT * FROM infections");
         
         if ($query) {
-            $data['centers'] = $query;
+            $data['inf'] = $query;
         }
-        $this->load->view('view-centers', $data);
-    }
-    public function map() {
-      
-         $query = $this->Md->query("SELECT * FROM center WHERE lat<>'' OR lng<>''");
-        
-        if ($query) {
-            $data['centers'] = $query;
-        }
-        $this->load->view('view-map', $data);
+        $this->load->view('infection-page', $data);
     }
 
-  
+    public function home() {
+        if ($this->session->userdata('name') == "" || $this->session->userdata('sessionName') == "") {
+            $this->session->sess_destroy();
+            redirect('home', 'refresh');
+        }
+        $this->load->view('home-page', $data);
+    }
+
+    public function listing() {
+        if ($this->session->userdata('physicianID') != "") {
+
+            $query = $this->Md->query("SELECT * FROM patient");
+            echo json_encode($query);
+        }
+    }
+    
+
+    public function session() {
+
+
+        $patientSession = $this->input->post('patientID');
+//        if ($this->session->userdata('patientID') == "" || $this->session->userdata('patientID') != $this->input->post('patientID')) {
+//
+//            $this->session->set_userdata('patientID', $this->input->post('patientID'));
+//        }
+
+        $sessionID = $this->GUID();
+        $this->session->set_userdata('patientSession', $patientSession);
+      //  $this->session->set_userdata($newdata);
+
+        echo 'Your session is: ' . $sessionID;
+    }
 
     public function create() {
 
         $this->load->helper(array('form', 'url'));
 
-        //user information
-        $centerID = $this->GUID();
-        $name = $this->input->post('name');
-
-
-        if ($name != "") {         
-           
-            ///organisation image uploads
-            $file_element_name = 'userfile';
-            $config['file_name'] = $patientID;
-            $config['upload_path'] = 'uploads/';
-            $config['allowed_types'] = '*';
-            $config['encrypt_name'] = FALSE;
-          
-            $this->load->library('upload', $config);
-            if (!$this->upload->do_upload($file_element_name)) {
-                $status = 'errors';
-                $msg = $this->upload->display_errors('', '');
-                $status .= '<div class="alert alert-error"> <strong>' . $msg . '</strong></div>';
-            }
-            $data = $this->upload->data();
-            $userfile = $data['file_name'];
-            $users = array('centerID' => $centerID, 'name' => $this->input->post('name'), 'image' => $userfile, 'address' => $this->input->post('address'), 'country' => $this->input->post('country'), 'city' => $this->input->post('city'), 'region' => $this->input->post('region'), 'lat' => $this->input->post('lat'), 'lng' => $this->input->post('lng'), 'type' => $this->input->post('type'), 'registrationNo' => $this->input->post('registrationNo'), 'created' => date('Y-m-d H:i:s'), 'status' => 'Dull');
-            $this->Md->save($users, 'center');
-            $status .= '<div class="alert alert-success">  <strong>You have successfully registered with us please login to continue</strong></div>';
+       
+            $users = array('name' => $this->input->post('name'), 'signs' => $this->input->post('signs'),  'symptoms' => $this->input->post('symptoms'),'created' => date('Y-m-d H:i:s'));
+            $this->Md->save($users, 'infections');
+            $status .= '<div class="alert alert-success">  <strong>Saved</strong></div>';
             $this->session->set_flashdata('msg', $status);
 
-            redirect('/home', 'refresh');
-        }
+            redirect('infection', 'refresh');
+        
     }
 
-    public function api() {
-        $orgid = urldecode($this->uri->segment(3));
-        $result = $this->Md->query("SELECT * FROM users WHERE org ='" . $orgid . "'");
+    public function mobile() {
+
+        $this->load->helper(array('form', 'url'));
+        $patientID = $this->GUID();
+        //$name = $this->input->post('name');
+        $contact = $this->input->post('contact');
+        $password = $this->input->post('password');
+        // $password_now = md5($password);
+        $get_result = $this->Md->check($contact, 'contact', 'patient');
+        if (!$get_result) {
+
+            $b["info"] = "invalid username!";
+            $b["status"] = "false";
+            echo json_encode($b);
+            return;
+        } else {
+            if($this->input->post('patient')=="patient"){
+            $users = array('patientID' => $patientID, 'name' => $this->input->post('name'), 'email' => $this->input->post('email'), 'dob' => date("Y-m-d", strtotime($this->input->post('dob'))), 'contact' => $this->input->post('contact'), 'password' => md5($this->input->post('password')), 'gender' => $this->input->post('gender'), 'image' => $this->input->post('image'), 'address' => $this->input->post('address'), 'contact' => $this->input->post('contact'), 'country' => $this->input->post('country'), 'city' => $this->input->post('city'), 'region' => $this->input->post('region'), 'created' => date('Y-m-d H:i:s'), 'state' => 'Active');
+            $this->Md->save($users, 'patient');
+            }else{
+                  $users = array('physicianID' => $patientID, 'name' => $this->input->post('name'), 'email' => $this->input->post('email'), 'designation' => $this->input->post('designation'), 'contact' => $this->input->post('contact'), 'password' => md5($this->input->post('password')), 'gender' => $this->input->post('gender'), 'image' => $this->input->post('image'), 'address' => $this->input->post('address'), 'contact' => $this->input->post('contact'), 'country' => $this->input->post('country'), 'city' => $this->input->post('city'), 'region' => $this->input->post('region'), 'created' => date('Y-m-d H:i:s'), 'state' => 'Active');
+                  $this->Md->save($users, 'physician');
+                
+            }
+           
+            $b["info"] = "Registration successfull";
+            $b["status"] = "true";
+            $b["name"] = $this->input->post('name');
+            $b["contact"] = $this->input->post('contact');
+            $b["email"] = $this->input->post('email');
+            $b["id"] = $patientID ;
+            $b["type"] = "patient";
+            $b["image"] = $this->input->post('image');
+            echo json_encode($b);
+            return;
+        }
+    }
+     public function api() {
+       
+
+            $query = $this->Md->query("SELECT * FROM patient");
+            echo json_encode($query);
+       
+    }
+    public function mine() {
+        if ($this->session->userdata('name') == "" || $this->session->userdata('sessionName') == "") {
+            $this->session->sess_destroy();
+            redirect('home', 'refresh');
+        }
+       $query = $this->Md->query("SELECT * FROM  patient WHERE physicianID='".$this->session->userdata('physicianID')."'");
+        
+        if ($query) {
+            $data['phys'] = $query;
+        }
+        $this->load->view('view-patients', $data);
+    }
+
+    public function apis() {
+       // $orgid = urldecode($this->uri->segment(3));
+        $result = $this->Md->query("SELECT * FROM patient");
 
         $all = array();
 
@@ -553,7 +611,7 @@ class Center extends CI_Controller {
                     //update the values
                     $task = array($field_name => $val);
                     // $this->Md->update($user_id, $task, 'tasks');
-                    $this->Md->update_dynamic($user_id, 'userID', 'users', $task);
+                    $this->Md->update_dynamic($user_id, 'infectionID', 'infections', $task);
                     echo "Updated";
                 } else {
                     echo "Invalid Requests";

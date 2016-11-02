@@ -1,28 +1,112 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <title>BV KIT</title>
-        <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW"/>
 
-        <link href="<?php echo base_url() ?>css/font-awesome.css" rel="stylesheet" type="text/css" />
-        <link href="<?php echo base_url() ?>css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-        <link href="<?php echo base_url() ?>css/animate.css" rel="stylesheet" type="text/css" />
-        <link href="<?php echo base_url() ?>css/admin.css" rel="stylesheet" type="text/css" />
-        
-        <link rel="stylesheet" type="text/css" href="<?= base_url(); ?>plugins/bootstrap-datepicker/css/datepicker.css" />
-        <link rel="stylesheet" type="text/css" href="<?= base_url(); ?>plugins/bootstrap-timepicker/compiled/timepicker.css" />
-        <link href="<?php echo base_url() ?>css/mine.css" rel="stylesheet" type="text/css" />
-    </head>
-    <body class="light_theme  fixed_header left_nav_fixed">
-        <div class="wrapper">
-            <div class="login_page">
-                <div class="registration">
-                    <div class="logo" ><span class="theme_color"><img src="<?php echo base_url() ?>images/bv.png" width="100" height="60" alt="s-logo" /></span></div>
+<?php require_once(APPPATH . 'views/inner-css.php'); ?>
+<style>
+    body {
+        font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 13px;
+        background-color:#FFFFFF;
+    }   
 
-                    <div class="panel-heading border login_heading">User registration</div>	
+</style>
+<div class="page-content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="block-web">
+                <div class="header">
+                    <div class="actions"> <a class="minimize" href="#"><i class="fa fa-chevron-down"></i></a> <a class="refresh" href="#"><i class="fa fa-repeat"></i></a> <a class="close-down" href="#"><i class="fa fa-times"></i></a> </div>
+                    <a href="javascript:void(0);" class="add_user" data-toggle="modal" data-target="#myModal"> <i class="fa fa-plus-square"></i> <span> New</span> </a>
+                    <h3 class="content-header">PATIENTS</h3>
                     <?php echo $this->session->flashdata('msg'); ?>
-                    <form id="station-form" parsley-validate novalidate role="form" class="form-horizontal" name="login-form" enctype="multipart/form-data"  action='<?= base_url(); ?>index.php/patient/create'  method="post">
+                </div>
+                <div class="alert alert-info" id="status"></div>
+                <div class="porlets-content">
+
+
+                    <div class="table-responsive scroll">
+                        <table  class="display table table-bordered table-striped" id="dynamic-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>E-mail</th>
+                                    <th>Designation</th>
+                                    <th class="hidden-phone">Contact</th>
+                                    <th class="hidden-phone">Gender</th>
+                                    <th class="hidden-phone">Address</th>
+                                    <th class="hidden-phone">Country</th>
+                                    <th class="hidden-phone">City</th>
+                                    <th class="hidden-phone">Region</th>
+                                    <th class="hidden-phone">State</th>
+                                    <th class="hidden-phone">Created</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <?php
+                                if (is_array($phys) && count($phys)) {
+                                    foreach ($phys as $loop) {
+                                        ?>  
+                                        <tr class="odd">
+                                            <td> 
+                                                <?php
+                                                if ($loop->image != "") {
+                                                    ?>
+                                                    <img  height="50px" width="50px"  src="<?= base_url(); ?>uploads/<?php echo $loop->image; ?>"  />
+                                                    <?php
+                                                } else {
+                                                    ?>
+                                                    <img  height="50px" width="50px"  src="<?= base_url(); ?>images/user_place.png"  />
+                                                    <?php
+                                                }
+                                                ?>
+                                            </td>
+
+                                            <td id="name:<?php echo $loop->physicianID; ?>" contenteditable="true">
+                                                <?php echo $loop->name; ?>
+                                            </td>
+
+                                            <td id="email:<?php echo $loop->physicianID; ?>" contenteditable="true"><?php echo $loop->email; ?></td>
+                                            <td id="designation:<?php echo $loop->physicianID; ?>" contenteditable="true">
+                                                <?php echo $loop->designation; ?>
+                                            </td>
+                                            <td id="contact:<?php echo $loop->physicianID; ?>" contenteditable="true"><?php echo $loop->contact; ?></td>
+                                            <td id="gender:<?php echo $loop->physicianID; ?>" contenteditable="true"><?php echo $loop->gender; ?></td>
+                                            <td id="address:<?php echo $loop->physicianID; ?>" contenteditable="true"><?php echo $loop->address; ?></td>
+                                            <td id="country:<?php echo $loop->physicianID; ?>" contenteditable="true"><?php echo $loop->country; ?></td>
+                                            <td id="city:<?php echo $loop->physicianID; ?>" contenteditable="true"><?php echo $loop->city; ?></td>
+                                            <td id="region:<?php echo $loop->physicianID; ?>" contenteditable="true"><?php echo $loop->region; ?></td>
+                                            <td id="state:<?php echo $loop->physicianID; ?>" contenteditable="true"><?php echo $loop->state; ?></td>
+                                            <td id="created:<?php echo $loop->physicianID; ?>" contenteditable="true"><?php echo $loop->created; ?></td>
+
+
+                                        </tr>
+                                        <?php
+                                    }
+                                }
+                                ?>
+
+                            </tbody>
+
+                        </table>
+                    </div><!--/table-responsive-->
+                </div><!--/porlets-content-->
+
+
+            </div><!--/block-web--> 
+        </div><!--/col-md-12--> 
+    </div><!--/row-->           
+</div><!--/page-content end--> 
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Add Patient</h4>
+            </div>
+            <div class="modal-body"> 
+
+               <form id="station-form" parsley-validate novalidate role="form" class="form-horizontal" name="login-form" enctype="multipart/form-data"  action='<?= base_url(); ?>index.php/patient/create'  method="post">
 
                         <div class="form-group">
 
@@ -190,65 +274,63 @@
                                     </div>
                                 </div>
                             </div>
-                                 <div class="alert alert-success">
-                                  <a href="<?php echo base_url() . "index.php/home"; ?>" >Back to login </a>
-                                 </div>
+                                
                     </form>
-                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
             </div>
         </div>
+    </div>
+</div>
+<!-- sidebar chats -->
+</div>
 
-        <script src="<?php echo base_url() ?>js/jquery-2.1.0.js"></script>
-        <script src="<?php echo base_url() ?>js/validator.js"></script>
-        <script src="<?php echo base_url() ?>js/bootstrap.min.js"></script>
-        <script src="<?php echo base_url() ?>js/common-script.js"></script>
-        <script src="<?php echo base_url() ?>js/jquery.slimscroll.min.js"></script>
-        <script src="<?php echo base_url() ?>js/validator.js"></script>
-        <script src="<?php echo base_url() ?>plugins/validation/parsley.min.js"></script>
-        <script type="text/javascript" src="<?php echo base_url() ?>plugins/bootstrap-datepicker/js/bootstrap-datepicker.js"></script> 
-        <script type="text/javascript" src="<?php echo base_url() ?>plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script> 
-        <script type="text/javascript" src="<?php echo base_url() ?>js/form-components.js"></script>       
-        <script type="text/javascript">
+<!-- /sidebar chats -->  
+<?php require_once(APPPATH . 'views/inner-js.php'); ?>
+<script>
+                            $(document).ready(function () {
+                                $("#status").hide();
                                 $(function () {
-                                    $("#userfile").on("change", function ()
-                                    {
-                                        var files = !!this.files ? this.files : [];
-                                        if (!files.length || !window.FileReader)
-                                            return; // no file selected, or no FileReader support
-
-                                        if (/^image/.test(files[0].type)) { // only image file
-                                            var reader = new FileReader(); // instance of the FileReader
-                                            reader.readAsDataURL(files[0]); // read the local file
-
-                                            reader.onloadend = function () { // set image data as background of div
-                                                $("#imagePreview").css("background-image", "url(" + this.result + ")");
+                                    //acknowledgement message
+                                    var message_status = $("#status");
+                                    $("td[contenteditable=true]").blur(function () {
+                                        var field_id = $(this).attr("id");
+                                        var value = $(this).text();
+                                        $.post('<?php echo base_url() . "index.php/physician/updater/"; ?>', field_id + "=" + value, function (data) {
+                                            if (data != '')
+                                            {
+                                                message_status.show();
+                                                message_status.text(data);
+                                                //hide the message
+                                                setTimeout(function () {
+                                                    message_status.hide()
+                                                }, 4000);
                                             }
-                                        }
+                                        });
                                     });
-                                });
-        </script>
-        <script>
-            $(document).ready(function () {
-                $('#station-form').formValidation({
-                    framework: 'bootstrap',
-                    icon: {
-                        valid: 'glyphicon glyphicon-ok',
-                        invalid: 'glyphicon glyphicon-remove',
-                        validating: 'glyphicon glyphicon-refresh'
-                    },
-                    fields: {
-                        confirmPassword: {
-                            validators: {
-                                identical: {
-                                    field: 'password',
-                                    message: 'The password and its confirm are not the same'
-                                }
-                            }
-                        }
-                    }
-                });
-            });
-        </script>
 
-    </body>
-</html>
+                                });
+                            });
+
+</script>
+<script type="text/javascript">
+    $(function () {
+        $("#userfile").on("change", function ()
+        {
+            var files = !!this.files ? this.files : [];
+            if (!files.length || !window.FileReader)
+                return; // no file selected, or no FileReader support
+
+            if (/^image/.test(files[0].type)) { // only image file
+                var reader = new FileReader(); // instance of the FileReader
+                reader.readAsDataURL(files[0]); // read the local file
+
+                reader.onloadend = function () { // set image data as background of div
+                    $("#imagePreview").css("background-image", "url(" + this.result + ")");
+                }
+            }
+        });
+    });
+</script>
