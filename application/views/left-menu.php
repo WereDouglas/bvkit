@@ -5,11 +5,11 @@
         <ul>
             <li class="left_nav_active theme_border"><a href="javascript:void(0);"><i class="fa fa-home"></i> PROFILE <span class="left_nav_pointer"></span> <span class="plus"><i class="fa fa-plus"></i></span> </a>
                 <ul class="opened" style="display:block">
-                    <li> <a href="settings.html"> <span>&nbsp;</span> <i class="fa fa-circle "></i> <b>My profile</b> </a> </li>
+                    <li> <a target="frame" href="<?php echo base_url() . "index.php/patient/profile"; ?>" > <span>&nbsp;</span> <i class="fa fa-circle "></i> <b>My profile</b> </a> </li>
 
                     <?php if ($this->session->userdata('sessionName') == "patient") { ?>
-                        <li> <a target="frame" href="<?php echo base_url() . "index.php/kin/view"; ?>" class="left_nav_sub_active"> <span>&nbsp;</span> <i class="fa fa-circle"></i> <b>Next of kin</b> </a> </li>
-                        <li> <a target="frame" href="<?php echo base_url() . "index.php/family/view"; ?>" class="left_nav_sub_active"> <span>&nbsp;</span> <i class="fa fa-circle"></i> <b>Family</b> </a> </li>
+                        <li> <a target="frame" href="<?php echo base_url() . "index.php/physician/"; ?>" class="left_nav_sub_active"> <span>&nbsp;</span> <i class="fa fa-circle"></i> <b>Next of kin</b> </a> </li>
+                        <li> <a target="frame" href="<?php echo base_url() . "index.php/physician/mine"; ?>" class="left_nav_sub_active"> <span>&nbsp;</span> <i class="fa fa-circle"></i> <b>Family</b> </a> </li>
                     <?php } ?>
                 </ul>
             </li>

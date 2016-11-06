@@ -25,6 +25,12 @@ class Center extends CI_Controller {
         }
         $this->load->view('view-centers', $data);
     }
+      public function api() {       
+
+            $query = $this->Md->query("SELECT * FROM center ");
+            echo json_encode($query);
+       
+    }
     public function map() {
       
          $query = $this->Md->query("SELECT * FROM center WHERE lat<>'' OR lng<>''");
@@ -72,31 +78,7 @@ class Center extends CI_Controller {
         }
     }
 
-    public function api() {
-        $orgid = urldecode($this->uri->segment(3));
-        $result = $this->Md->query("SELECT * FROM users WHERE org ='" . $orgid . "'");
-
-        $all = array();
-
-        foreach ($result as $res) {
-            $resv = new stdClass();
-            $resv->id = $res->id;
-            $resv->name = $res->name;
-            $resv->org = $res->org;
-            $resv->address = $res->address;
-            $resv->image = $res->image;
-            $resv->contact = $res->contact;
-            $resv->password = $this->encrypt->decode($res->password, $res->email);
-            $resv->types = $res->types;
-            $resv->level = $res->level;
-            $resv->created = $res->created;
-            $resv->status = $res->status;
-            $resv->email = $res->email;
-
-            array_push($all, $resv);
-        }
-        echo json_encode($all);
-    }
+  
 
     public function update_image() {
 

@@ -23,7 +23,7 @@
                             // obj.style.width = obj.contentWindow.document.body.scrollHeight + 'px';
                         }
                     </script>
-                    <iframe id="frame" name="frame" frameborder="no" border="0" onload="resizeIframe(this)" scrolling="no"  style="padding: 10px; min-height:600px;" width="100%" class="span12" src="<?php echo base_url() . "index.php/task/add"; ?>"> </iframe>         
+                    <iframe id="frame" name="frame" frameborder="no" border="0" onload="resizeIframe(this)" scrolling="no"  style="padding: 10px; min-height:600px;" width="100%" class="span12" src="<?php echo base_url() . "index.php/home/start"; ?>"> </iframe>         
 
                 </div>
                 <!--\\\\\\\ content panel end \\\\\\-->

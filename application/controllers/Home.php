@@ -40,33 +40,8 @@ class Home extends CI_Controller {
 
     public function home() {
 
-        // $query = $this->Md->query("SELECT * FROM users where org='".$this->session->userdata('orgid')."'");
-        $query = $this->Md->query("SELECT * FROM users where  orgID='" . $this->session->userdata('orgID') . "'");
-        if ($query) {
-            $data['users'] = $query;
-        }
-        $query = $this->Md->query("SELECT * FROM file where  orgID='" . $this->session->userdata('orgID') . "'");
-        if ($query) {
-            $data['files'] = $query;
-        }
-        $query = $this->Md->query("SELECT * FROM message where  orgID='" . $this->session->userdata('orgID') . "'");
-        if ($query) {
-            $data['messages'] = $query;
-        }
-        $query = $this->Md->query("SELECT * FROM tasks where  orgID='" . $this->session->userdata('orgID') . "'");
-        if ($query) {
-            $data['tasks'] = $query;
-        }
-
-        $query = $this->Md->query("SELECT * FROM transaction where  orgID='" . $this->session->userdata('orgID') . "'");
-        if ($query) {
-            $data['transactions'] = $query;
-        }
-        $query = $this->Md->query("SELECT * FROM payment where  orgID='" . $this->session->userdata('orgID') . "'");
-        if ($query) {
-            $data['payments'] = $query;
-        }
-        $this->load->view('home-page', $data);
+     
+        $this->load->view('start-page');
     }
 
     public function version() {
@@ -80,19 +55,7 @@ class Home extends CI_Controller {
     }
 
     public function start() {
-        // $query = $this->Md->query("SELECT * FROM users where org='".$this->session->userdata('orgid')."'");
-        $query = $this->Md->query("SELECT * FROM users");
-
-
-//  var_dump($query);
-        if ($query) {
-            $data['users'] = $query;
-        } else {
-            $data['users'] = array();
-        }
-
-
-        $this->load->view('start-page', $data);
+         $this->load->view('start-page');
     }
 
     public function logout() {

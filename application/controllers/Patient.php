@@ -32,11 +32,10 @@ class Patient extends CI_Controller {
     public function listing() {
         if ($this->session->userdata('physicianID') != "") {
 
-            $query = $this->Md->query("SELECT * FROM patient WHERE physicianID='".$this->session->userdata('physicianID')."'");
+            $query = $this->Md->query("SELECT * FROM patient WHERE physicianID='" . $this->session->userdata('physicianID') . "'");
             echo json_encode($query);
         }
     }
-    
 
     public function session() {
 
@@ -49,7 +48,7 @@ class Patient extends CI_Controller {
 
         $sessionID = $this->GUID();
         $this->session->set_userdata('patientSession', $patientSession);
-      //  $this->session->set_userdata($newdata);
+        //  $this->session->set_userdata($newdata);
 
         echo 'Your session is: ' . $sessionID;
     }
@@ -89,7 +88,7 @@ class Patient extends CI_Controller {
             }
             $data = $this->upload->data();
             $userfile = $data['file_name'];
-            $users = array('patientID' => $patientID,'physicianID' => $this->session->userdata('physicianID'), 'name' => $this->input->post('name'), 'email' => $this->input->post('email'), 'dob' => date("Y-m-d", strtotime($this->input->post('dob'))), 'contact' => $this->input->post('contact'), 'password' => md5($this->input->post('password')), 'gender' => $this->input->post('gender'), 'image' => $userfile, 'address' => $this->input->post('address'), 'contact' => $this->input->post('contact'), 'country' => $this->input->post('country'), 'city' => $this->input->post('city'), 'region' => $this->input->post('region'), 'created' => date('Y-m-d H:i:s'), 'state' => 'Active');
+            $users = array('patientID' => $patientID, 'physicianID' => $this->session->userdata('physicianID'), 'name' => $this->input->post('name'), 'email' => $this->input->post('email'), 'dob' => date("Y-m-d", strtotime($this->input->post('dob'))), 'contact' => $this->input->post('contact'), 'password' => md5($this->input->post('password')), 'gender' => $this->input->post('gender'), 'image' => $userfile, 'address' => $this->input->post('address'), 'contact' => $this->input->post('contact'), 'country' => $this->input->post('country'), 'city' => $this->input->post('city'), 'region' => $this->input->post('region'), 'created' => date('Y-m-d H:i:s'), 'state' => 'Active');
             $this->Md->save($users, 'patient');
             $status .= '<div class="alert alert-success">  <strong>You have successfully registered with us please login to continue</strong></div>';
             $this->session->set_flashdata('msg', $status);
@@ -114,41 +113,40 @@ class Patient extends CI_Controller {
             echo json_encode($b);
             return;
         } else {
-            if($this->input->post('patient')=="patient"){
-            $users = array('patientID' => $patientID, 'name' => $this->input->post('name'), 'email' => $this->input->post('email'), 'dob' => date("Y-m-d", strtotime($this->input->post('dob'))), 'contact' => $this->input->post('contact'), 'password' => md5($this->input->post('password')), 'gender' => $this->input->post('gender'), 'image' => $this->input->post('image'), 'address' => $this->input->post('address'), 'contact' => $this->input->post('contact'), 'country' => $this->input->post('country'), 'city' => $this->input->post('city'), 'region' => $this->input->post('region'), 'created' => date('Y-m-d H:i:s'), 'state' => 'Active');
-            $this->Md->save($users, 'patient');
-            }else{
-                  $users = array('physicianID' => $patientID, 'name' => $this->input->post('name'), 'email' => $this->input->post('email'), 'designation' => $this->input->post('designation'), 'contact' => $this->input->post('contact'), 'password' => md5($this->input->post('password')), 'gender' => $this->input->post('gender'), 'image' => $this->input->post('image'), 'address' => $this->input->post('address'), 'contact' => $this->input->post('contact'), 'country' => $this->input->post('country'), 'city' => $this->input->post('city'), 'region' => $this->input->post('region'), 'created' => date('Y-m-d H:i:s'), 'state' => 'Active');
-                  $this->Md->save($users, 'physician');
-                
+            if ($this->input->post('patient') == "patient") {
+                $users = array('patientID' => $patientID, 'name' => $this->input->post('name'), 'email' => $this->input->post('email'), 'dob' => date("Y-m-d", strtotime($this->input->post('dob'))), 'contact' => $this->input->post('contact'), 'password' => md5($this->input->post('password')), 'gender' => $this->input->post('gender'), 'image' => $this->input->post('image'), 'address' => $this->input->post('address'), 'contact' => $this->input->post('contact'), 'country' => $this->input->post('country'), 'city' => $this->input->post('city'), 'region' => $this->input->post('region'), 'created' => date('Y-m-d H:i:s'), 'state' => 'Active');
+                $this->Md->save($users, 'patient');
+            } else {
+                $users = array('physicianID' => $patientID, 'name' => $this->input->post('name'), 'email' => $this->input->post('email'), 'designation' => $this->input->post('designation'), 'contact' => $this->input->post('contact'), 'password' => md5($this->input->post('password')), 'gender' => $this->input->post('gender'), 'image' => $this->input->post('image'), 'address' => $this->input->post('address'), 'contact' => $this->input->post('contact'), 'country' => $this->input->post('country'), 'city' => $this->input->post('city'), 'region' => $this->input->post('region'), 'created' => date('Y-m-d H:i:s'), 'state' => 'Active');
+                $this->Md->save($users, 'physician');
             }
-           
+
             $b["info"] = "Registration successfull";
             $b["status"] = "true";
             $b["name"] = $this->input->post('name');
             $b["contact"] = $this->input->post('contact');
             $b["email"] = $this->input->post('email');
-            $b["id"] = $patientID ;
+            $b["id"] = $patientID;
             $b["type"] = "patient";
             $b["image"] = $this->input->post('image');
             echo json_encode($b);
             return;
         }
     }
-     public function api() {
-       
 
-            $query = $this->Md->query("SELECT * FROM patient");
-            echo json_encode($query);
-       
+    public function api() {
+
+        $query = $this->Md->query("SELECT * FROM patient");
+        echo json_encode($query);
     }
+
     public function mine() {
         if ($this->session->userdata('name') == "" || $this->session->userdata('sessionName') == "") {
             $this->session->sess_destroy();
             redirect('home', 'refresh');
         }
-       $query = $this->Md->query("SELECT * FROM  patient WHERE physicianID='".$this->session->userdata('physicianID')."'");
-        
+        $query = $this->Md->query("SELECT * FROM  patient WHERE physicianID='" . $this->session->userdata('physicianID') . "'");
+
         if ($query) {
             $data['phys'] = $query;
         }
@@ -156,7 +154,7 @@ class Patient extends CI_Controller {
     }
 
     public function apis() {
-       // $orgid = urldecode($this->uri->segment(3));
+        // $orgid = urldecode($this->uri->segment(3));
         $result = $this->Md->query("SELECT * FROM patient");
 
         $all = array();
@@ -383,54 +381,19 @@ class Patient extends CI_Controller {
 
         $this->load->helper(array('form', 'url'));
         $name = urldecode($this->uri->segment(3));
-
-        $query = $this->Md->query("SELECT * FROM events where orgID = '" . $this->session->userdata('orgID') . "'AND user='" . $name . "' ");
-
-        if ($query) {
-            $data['events'] = $query;
-        } else {
-            $data['events'] = array();
+        if ($this->session->userdata('sessionName') == 'patient') {
+            $query = $this->Md->query("SELECT * FROM patient where patientID = '" . $this->session->userdata('patientID') . "'");
         }
-        $query = $this->Md->query("SELECT * FROM users where name ='" . $name . "' AND orgID='" . $this->session->userdata('orgID') . "'");
+        if ($this->session->userdata('sessionName') == 'physician') {
+            $query = $this->Md->query("SELECT * FROM physician where physicianID = '" . $this->session->userdata('physicianID') . "'");
+        }
 
         if ($query) {
-            $data['users'] = $query;
+            $data['user'] = $query;
         } else {
-            $data['users'] = array();
+            $data['user'] = array();
         }
-        $this->load->helper(array('form', 'url'));
-        $query = $this->Md->query("SELECT * FROM file where orgID = '" . $this->session->userdata('orgID') . "' AND lawyer='" . $name . "' ");
-
-        if ($query) {
-            $data['files'] = $query;
-        } else {
-            $data['files'] = array();
-        }
-        $query = $this->Md->query("SELECT * FROM  tasks where orgID = '" . $this->session->userdata('orgID') . "' AND userID = '" . $name . "' ");
-        if ($query) {
-            $data['sch'] = $query;
-        } else {
-            $data['sch'] = array();
-        }
-        $query = $this->Md->query("SELECT * FROM attend where orgID = '" . $this->session->userdata('orgID') . "'");
-        //  var_dump($query);
-        if ($query) {
-            $data['att'] = $query;
-        } else {
-            $data['att'] = array();
-        }
-        $query = $this->Md->query("SELECT * FROM document where orgID = '" . $this->session->userdata('orgID') . "' AND lawyer = '" . $name . "' OR client = '" . $name . "' ");
-
-        if ($query) {
-            $data['docs'] = $query;
-        } else {
-            $data['docs'] = array();
-        }
-        $query = $this->Md->query("SELECT * FROM client where  orgID='" . $this->session->userdata('orgID') . "' AND lawyer = '" . $name . "'");
-        if ($query) {
-            $data['clients'] = $query;
-        }
-        $this->load->view('user-profile', $data);
+        $this->load->view('profile-page', $data);
     }
 
     public function GUID() {

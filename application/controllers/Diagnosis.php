@@ -108,7 +108,7 @@ class Diagnosis extends CI_Controller {
             return;
         }
 
-       if (strlen($this->input->post('sessionID')) >3 && strlen($this->input->post('patientNotes'))>3 && $this->session->userdata('patientSession') == "") {
+       if (strlen($this->input->post('sessionID')) > 3 && (strlen($this->input->post('patientNotes'))>3 || strlen($this->input->post('type'))> 3  ) && $this->session->userdata('patientSession') == "") {
 
             $deductions = $this->Md->query_cell("SELECT name FROM infections WHERE signs  LIKE '%" . $this->input->post('patientNotes') . "%'", 'name');
             $data = array('physicianID' => "", 'patientID' => $this->input->post('patientID'), 'mac' => $this->input->post('mobile'), 'sessionID' => $this->input->post('sessionID'), 'deduction' => $deductions, 'metric' => $this->input->post('metric'), 'type' => $this->input->post('type'), 'medicalNotes' => $this->input->post('medicalNotes'), 'symptoms' => $this->input->post('patientNotes'), 'qty' => $this->input->post('qty'), 'next' => date("Y-m-d"), 'results' => $this->input->post('results'), 'stamp' => date('Y-m-d H:i:s'));
@@ -134,10 +134,20 @@ class Diagnosis extends CI_Controller {
     }
 
     public function api() {
+        
+         $userID = urldecode($this->uri->segment(3));
+         $userType = urldecode($this->uri->segment(4));
+         if($userType=="patient"){
+             $query = $this->Md->query("SELECT * FROM analysis LEFT JOIN patient ON analysis.patientID= patient.patientID WHERE patient.patientID = '$userID'");
+             echo json_encode($query);
+             
+         }
+         else{             
+             $query = $this->Md->query("SELECT * FROM analysis LEFT JOIN patient ON analysis.patientID= patient.patientID WHERE patient.physicianID ='$userID'");
+             echo json_encode($query);
+         }
 
-
-        $query = $this->Md->query("SELECT * FROM analysis LEFT JOIN patient ON analysis.patientID= patient.patientID");
-        echo json_encode($query);
+        
     }
 
     public function update_image() {

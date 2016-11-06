@@ -29,7 +29,7 @@ class Logs extends CI_Controller {
                 
                   $query = $this->Md->cascade($this->input->post('sessionID'), 'logs', 'sessionID');
             }
-                $trans = array('userID' => $this->input->post('patientID'), 'patientID' => $this->input->post('patientID'), 'sessionID' => $this->input->post('sessionID'), 'value' => $this->input->post('value'), 'created' => date('Y-m-d H:i:s'));
+                $trans = array('userID' => $this->input->post('patientID'), 'patientID' => $this->input->post('patientID'), 'sessionID' => $this->input->post('sessionID'), 'value' => $this->input->post('value'),'ph' => $this->input->post('value'),'volume' => $this->input->post('volume'),'smell' => $this->input->post('smell'), 'depth' => $this->input->post('depth'),'light' => $this->input->post('light'),'gravity' => $this->input->post('gravity'),'viscosity' => $this->input->post('viscosity'),'created' => date('Y-m-d H:i:s'));
                 $this->Md->save($trans, 'logs');
                 echo 'saved';
             } else {

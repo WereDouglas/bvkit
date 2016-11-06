@@ -23,7 +23,7 @@ class Physician extends CI_Controller {
         if ($query) {
             $data['phys'] = $query;
         }
-        $this->load->view('view-phy', $data);
+        $this->load->view('view-physician', $data);
     }
      public function mine() {
         if ($this->session->userdata('name') == "" || $this->session->userdata('sessionName') == "") {
@@ -35,7 +35,7 @@ class Physician extends CI_Controller {
         if ($query) {
             $data['phys'] = $query;
         }
-        $this->load->view('view-phy', $data);
+        $this->load->view('view-physician', $data);
     }
 
     public function add() {
@@ -87,30 +87,11 @@ class Physician extends CI_Controller {
         }
     }
 
-    public function api() {
-        $orgid = urldecode($this->uri->segment(3));
-        $result = $this->Md->query("SELECT * FROM users WHERE org ='" . $orgid . "'");
+    public function api() {       
 
-        $all = array();
-
-        foreach ($result as $res) {
-            $resv = new stdClass();
-            $resv->id = $res->id;
-            $resv->name = $res->name;
-            $resv->org = $res->org;
-            $resv->address = $res->address;
-            $resv->image = $res->image;
-            $resv->contact = $res->contact;
-            $resv->password = $this->encrypt->decode($res->password, $res->email);
-            $resv->types = $res->types;
-            $resv->level = $res->level;
-            $resv->created = $res->created;
-            $resv->status = $res->status;
-            $resv->email = $res->email;
-
-            array_push($all, $resv);
-        }
-        echo json_encode($all);
+            $query = $this->Md->query("SELECT *,center.name AS center,physician.name AS name FROM physician JOIN center ON physician.centerID= center.centerID");
+            echo json_encode($query);
+       
     }
 
     public function update_image() {
